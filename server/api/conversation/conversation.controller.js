@@ -18,7 +18,7 @@ exports.show = function(req, res) {
     if(err) { return handleError(res, err); }
     if(!conversation) { return res.send(404); }
 
-    if(req.user && conversation.maySee(req.user._id)) 
+    if(req.user && conversation.maySee(req.user._id))
       return res.json(conversation);
     else
       return res.send(403);
@@ -30,11 +30,11 @@ exports.showPublic = function(req, res){
     if(err) { return handleError(res, err); }
     if(!conversation) { return res.send(404); }
 
-    if(conversation.isPublic()) 
+    if(conversation.isPublic())
       res.json(conversation);
     else
       res.send(403);
-  });  
+  });
 }
 
 // Creates a new conversation in the DB.
@@ -169,7 +169,7 @@ exports.removeBan = function (req, res){
 }
 
 function handleError(res, msg, err) {
-  var err = err || '';
+  err = err || '';
   console.log(msg, err);
   return res.send(500, err);
 }

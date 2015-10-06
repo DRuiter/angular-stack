@@ -11,8 +11,8 @@ angular.module('angularStackApp')
         $scope.box   = $scope.inbox[0].box;
 
 	      socket.syncUpdates('inbox', $scope.inbox);
-        console.log(inbox.box.length)
-        console.log(inbox)
+        console.log(inbox.box.length);
+        console.log(inbox);
 	    }, function (err){
 	    	console.log(err);
 	    });
@@ -30,13 +30,13 @@ angular.module('angularStackApp')
           .message(payload)
           .$promise
           .then(function (res){
-            console.log(res)
+            console.log(res);
           }, function (err){
-            console.log(err)
-          })
-      })
+            console.log(err);
+          });
+      });
 
     $scope.$on('$destroy', function (){
       socket.unsyncUpdates('inbox');
-    })
+    });
   });

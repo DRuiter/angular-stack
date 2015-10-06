@@ -29,9 +29,9 @@ var ConversationSchema = new Schema({
   	userID: {type: Schema.Types.ObjectId, ref: 'User'},
   	name: String,
   	text: {
-  		type: String, 
+  		type: String,
   		validate: [
-  			function(s){return s.length < SchemaSettings.maxMessageLength}, 
+  			function(s){return s.length < SchemaSettings.maxMessageLength},
   			'Conversation > Message length exceeds max length of '+SchemaSettings.maxMessageLength
   		]
   	},
@@ -43,7 +43,7 @@ var ConversationSchema = new Schema({
 	.path('identifier')
 	.validate(function (identifier, respond){
 		mongoose.model('Conversation').find({identifier: identifier}, function (err, doc){
-			if(doc.length > 1) 
+			if(doc.length > 1)
 				respond(false);
 			else
 				respond(true);
@@ -70,7 +70,7 @@ ConversationSchema.statics.findOneAndPopulate = function(query, callback){
 		findQuery = {identifier: query}
 	else
 		findQuery = {_id: query}
-	
+
 	this
 		.findOne(findQuery)
 		.populate('online', 'name')
@@ -78,14 +78,19 @@ ConversationSchema.statics.findOneAndPopulate = function(query, callback){
 }
 
 ConversationSchema.statics.findOneBySharedId = function (query, callback, noPopulate){
-	var noPopulate = noPopulate || false,
-			findQuery;
+  var findQuery;
 
-	if(!query) callback('Conversation.findOneAndPopulate > no query parameter');
-	if(!mongoose.Types.ObjectId.isValid(query))
-		findQuery = {identifier: query}
-	else
-		findQuery = {_id: query}
+  noPopulate = noPopulate || false;
+
+	if(!query) {
+    callback('Conversation.findOneAndPopulate > no query parameter');
+  }
+
+	if(!mongoose.Types.ObjectId.isValid(query)) {
+		findQuery = {identifier: query};
+	} else {
+		findQuery = {_id: query};
+  }
 
 	if(noPopulate){
 		this
@@ -207,7 +212,7 @@ ConversationSchema.methods.addModerator = function (userID, modID){
 
 ConversationSchema.methods.isParticipant = function (userID){
 	var isParticipant = false;
-	
+
 	this.participants.forEach(function (participantID){
 		if(participantID.equals(userID)) isParticipant = true;
 	})

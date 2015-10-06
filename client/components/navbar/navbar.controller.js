@@ -22,8 +22,8 @@ angular.module('angularStackApp')
         default:
           return true;
       }
-    }
-    
+    };
+
     $scope.logout = function() {
       Auth.logout();
       $location.path('/login');

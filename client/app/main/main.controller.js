@@ -10,9 +10,11 @@ angular.module('angularStackApp')
       moderator: false,
       ban: false,
       mute: false
-    }
+    };
 
-    if($cookieStore.get('token')) $scope.user = User.get();
+    if($cookieStore.get('token')) {
+      $scope.user = User.get();
+    }
 
     $scope.sendMessage = sendMessage;
 
@@ -25,36 +27,45 @@ angular.module('angularStackApp')
         $scope.$watch('conversation[0].moderators', function (mods){
           if($scope.user){
             mods.forEach(function (modID){
-              if($scope.user._id === modID) $scope.role = 'moderator';
-            })
+              if($scope.user._id === modID) {
+                $scope.role = 'moderator';
+              }
+            });
           }
-        })
+        });
 
         $scope.$watch('conversation[0].admins', function (admins){
           if($scope.user){
             admins.forEach(function (adminID){
-              if($scope.user._id === adminID) $scope.role = 'admin';
-            })
+              if($scope.user._id === adminID) {
+                $scope.role = 'admin';
+              }
+            });
           }
-        })
+        });
 
-        $scope.$watch('conversation[0].messages', function (newv, oldv){
-          if(!$scope.autoScroll) return false;
+        $scope.$watch('conversation[0].messages', function (){
+          if(!$scope.autoScroll) {
+            return false;
+          }
+
           var chatContainer = document.getElementsByClassName('chat-container')[0];
-          setTimeout(function(){chatContainer.scrollTop = chatContainer.scrollHeight}, 0);
-        })
+          setTimeout(function(){
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+          }, 0);
+        });
 
         socket.socket.emit('conversation:notify:online', {conversationID: cid});
 
         socket.syncUpdates('conversation', $scope.conversation);
       }, function (err){
         console.log(err);
-      })
+      });
 
     $scope.$on('$destroy', function (){
-      socket.socket.emit('conversation:notify:offline', {conversationID: cid})
+      socket.socket.emit('conversation:notify:offline', {conversationID: cid});
       socket.unsyncUpdates('conversation');
-    })
+    });
 
     $scope.maySend = maySend;
     $scope.formatDate = formatDate;
@@ -63,53 +74,60 @@ angular.module('angularStackApp')
     $scope.toolAction = toolAction;
 
     function toolAction($event){
-      console.log($event)
-      var active;
+      var active,
+          userID;
 
       function isModerator(userID){
-        var isMod = false;;
+        var isMod = false;
 
         $scope.conversation[0].moderators.forEach(function (modID){
-          if(modID === userID) isMod = true;
-        })
+          if(modID === userID) {
+            isMod = true;
+          }
+        });
 
         return isMod;
       }
 
       function isBanned(userID){
-        var isBanned = false;;
+        var banned = false;
 
         $scope.conversation[0].banlist.forEach(function (ban){
-          if(ban.userID === userID) isBanned = true;
-        })
+          if(ban.userID === userID) {
+            banned = true;
+          }
+        });
 
-        return isBanned;
+        return banned;
       }
 
-      for(var i in $scope.controls) 
-        if($scope.controls[i]) active = i;
+      for(var i in $scope.controls) {
+        if($scope.controls[i]) {
+          active = i;
+        }
 
       switch(active){
         case 'ban':
-          var userID = angular.element($event.currentTarget).data().userid;
-          if(isBanned(userID))
-            Conversation.removeBan({id: $scope.conversation[0]._id, banID:userID})
-          else
-            Conversation.addBan({id:$scope.conversation[0]._id, banID:userID})
-
+          userID = angular.element($event.currentTarget).data().userid;
+          if(isBanned(userID)) {
+            Conversation.removeBan({id: $scope.conversation[0]._id, banID:userID});
+          } else {
+            Conversation.addBan({id:$scope.conversation[0]._id, banID:userID});
+          }
         break;
 
         case 'moderator':
-          var userID = angular.element($event.currentTarget).data().userid;
-          if(isModerator(userID))
-            Conversation.removeMod({id:$scope.conversation[0]._id, moderatorID:userID})
-          else
-            Conversation.addMod({id:$scope.conversation[0]._id, moderatorID:userID})
+          userID = angular.element($event.currentTarget).data().userid;
+          if(isModerator(userID)) {
+            Conversation.removeMod({id:$scope.conversation[0]._id, moderatorID:userID});
+          } else {
+            Conversation.addMod({id:$scope.conversation[0]._id, moderatorID:userID});
+          }
         break;
 
         case 'mute':
           var messageID = angular.element($event.currentTarget).data().messageid;
-          Conversation.muteMessage({id:$scope.conversation[0]._id, messageID:messageID})
+          Conversation.muteMessage({id:$scope.conversation[0]._id, messageID:messageID});
         break;
       }
     }
@@ -122,13 +140,21 @@ angular.module('angularStackApp')
       $scope.controls[toggle] = !$scope.controls[toggle];
 
       for(var i in $scope.controls) {
-        if(i !== toggle) $scope.controls[i] = false;
+        if(i !== toggle) {
+          $scope.controls[i] = false;
+        }
       }
     }
 
     function maySend(){
-      if(!$scope.conversation || !$scope.conversation[0]) return false;
-      if($scope.conversation[0].publicConversation && $scope.user) return true;
+      if(!$scope.conversation || !$scope.conversation[0]) {
+        return false;
+      }
+
+      if($scope.conversation[0].publicConversation && $scope.user) {
+        return true;
+      }
+
       return false;
     }
 
@@ -153,40 +179,44 @@ angular.module('angularStackApp')
       Conversation.removeBan({
         id: $scope.user._id,
         banID: document.getElementById('cm').value
-      })
+      });
     }
 
     function addBan(){
       Conversation.addBan({
         id: $scope.user._id,
         banID: document.getElementById('cm').value
-      })
+      });
     }
 
     function addMod(){
       Conversation.addMod({
         id: $scope.user._id,
         moderatorID: document.getElementById('cm').value
-      })
+      });
     }
 
     function removeMod(){
       Conversation.removeMod({
         id: $scope.user._id,
         moderatorID: document.getElementById('cm').value
-      })
+      });
     }
 
     function sendMessage(){
-      if(document.getElementById('message-input').value.length < 1 || !maySend()) return false;
-      
+      if(document.getElementById('message-input').value.length < 1 || !maySend()) {
+        return false;
+      }
+
       Conversation.addMessage({
-        id: $scope.conversation[0]._id, 
+        id: $scope.conversation[0]._id,
         message: {
           text: document.getElementById('message-input').value
         }
-      })
+      });
 
       document.getElementById('message-input').value = '';
     }
+
   });
+});

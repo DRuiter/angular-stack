@@ -2,8 +2,10 @@
 
 angular.module('angularStackApp')
   .controller('ChatbarCtrl', function ($scope, $location, $modal, $cookieStore, Auth, User, Conversation, socket) {
-    
-    if(!$cookieStore.get('token')) return false;
+
+    if(!$cookieStore.get('token')) {
+      return false;
+    }
 
     /*
       Sync conversation messages over socket connection!
@@ -20,12 +22,12 @@ angular.module('angularStackApp')
         $scope.user = [res];
         socket.syncUpdates('user', $scope.user);
       }, function (err){
-
-      })
+        console.error(err);
+      });
 
     $scope.$on('$destroy', function (){
-      scoket.unsyncUpdates('user');
-    })
+      socket.unsyncUpdates('user');
+    });
 
     $scope.activeFriendConversation = {};
     $scope.talkingTo = {};
@@ -37,10 +39,12 @@ angular.module('angularStackApp')
 
       $scope.user[0].conversations.forEach(function (conversation){
         conversation.participants.forEach(function (participant){
-          if(participant === friend._id) $scope.activeFriendConversation = conversation;
-        })
-      })
-    }
+          if(participant === friend._id) {
+            $scope.activeFriendConversation = conversation;
+          }
+        });
+      });
+    };
 
     $scope.sendMessage = function (conversationID){
       console.log('wat', conversationID, $scope.chatbarMessage);
@@ -50,12 +54,11 @@ angular.module('angularStackApp')
           name: $scope.user[0].name,
           text: $scope.chatbarMessage
         }
-      })
-    }
+      });
+    };
 
     $scope.open = function (size) {
-
-      var modalInstance = $modal.open({
+      $modal.open({
         templateUrl: 'manage-friends.html',
         controller: ModalInstanceCtrl,
         size: size,
@@ -77,22 +80,22 @@ angular.module('angularStackApp')
 
       $scope.accept = function(userID){
         User.acceptFriendRequest({requestID: userID});
-        $scope.removeRequest(userID)
-      }
+        $scope.removeRequest(userID);
+      };
 
       $scope.request = function (){
         User.sendFriendRequest({email: document.getElementById('friend-email-input').value});
-      }
+      };
 
       $scope.reject = function(userID){
         User.rejectFriendRequest({requestID: userID});
-        $scope.removeRequest(userID)
-      }
+        $scope.removeRequest(userID);
+      };
 
       $scope.remove = function (userID){
         User.removeFriend({}, {friendID: userID});
-        $scope.removeFriend(userID)
-      }
+        $scope.removeFriend(userID);
+      };
 
       $scope.ok = function () {
         $modalInstance.close();
@@ -104,15 +107,18 @@ angular.module('angularStackApp')
 
       $scope.removeRequest = function (userID) {
         $scope.requests.forEach(function (req, index){
-          if(req._id === userID) $scope.requests.splice(index, 1);
-        })
-      }
+          if(req._id === userID) {
+            $scope.requests.splice(index, 1);
+          }
+        });
+      };
 
       $scope.removeFriend = function (userID) {
         $scope.friends.forEach(function (friend, index){
-          if(friend._id === userID) $scope.friends.splice(index, 1);
-        })
-      }
+          if(friend._id === userID) {
+            $scope.friends.splice(index, 1);
+          }
+        });
+      };
     };
-
   });

@@ -4,7 +4,7 @@
 angular.module('angularStackApp')
   .factory('socket', function (socketFactory, $cookieStore) {
 
-    console.log('TOKEN: ', $cookieStore.get('token'))
+    console.log('TOKEN: ', $cookieStore.get('token'));
 
     // socket.io now auto-configures its connection when we ommit a connection url
     var ioSocket = io('', {

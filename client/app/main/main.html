@@ -1,11 +1,5 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
-<header class="hero-unit" id="banner">
-  <div class="container">
-    <h1>Chatter Prototype</h1>
-  </div>
-</header>
-
 <div class="container">
   <div class="row">
     <div class="chat-container" data-conversationID="{{conversation[0]._id}}">
@@ -23,7 +17,9 @@
 
       <ul class="chat-users pull-right">
         <li class="seperator">
-          {{conversation[0].online.length}} {{conversation[0].online.length > 1 ? 'Users' : 'User'}}
+          {{conversation[0].online.length}} 
+          Online 
+          {{conversation[0].online.length === 1 ? 'User' : 'Users'}}
         </li>
 
         <li 
